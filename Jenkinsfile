@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'master',
@@ -14,21 +15,35 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
+        stage('Build') {
             steps {
-                sh 'mvn clean verify'
+                sh 'mvn clean package'
             }
         }
 
-        stage('Package') {
+        stage('Find JAR') {
             steps {
-                sh 'mvn package'
+                script {
+                    def jarFile = sh(
+                        script: "ls target/*.jar | head -n 1",
+                        returnStdout: true
+                    ).trim()
+
+                    env.JAR_PATH = jarFile
+                    echo "Found JAR: ${env.JAR_PATH}"
+                }
+            }
+        }
+
+        stage('Verify JAR') {
+            steps {
+                sh 'ls -l target'
             }
         }
 
         stage('Run Application') {
             steps {
-                sh 'java -jar target/*.jar'
+                sh "java -jar ${env.JAR_PATH}"
             }
         }
     }
