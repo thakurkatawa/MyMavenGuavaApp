@@ -21,23 +21,27 @@ pipeline {
             }
         }
 
+        stage('Debug Target') {
+            steps {
+                sh 'ls -l target'
+            }
+        }
+
         stage('Find JAR') {
             steps {
                 script {
                     def jarFile = sh(
-                        script: "ls target/*.jar | head -n 1",
+                        script: "find target -maxdepth 1 -name '*.jar' | grep -v sources | grep -v original | head -n 1",
                         returnStdout: true
                     ).trim()
 
-                    env.JAR_PATH = jarFile
-                    echo "Found JAR: ${env.JAR_PATH}"
-                }
-            }
-        }
+                    if (!jarFile) {
+                        error "No runnable JAR found in target/"
+                    }
 
-        stage('Verify JAR') {
-            steps {
-                sh 'ls -l target'
+                    env.JAR_PATH = jarFile
+                    echo "Using JAR: ${env.JAR_PATH}"
+                }
             }
         }
 
