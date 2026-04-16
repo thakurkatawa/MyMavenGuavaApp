@@ -21,26 +21,20 @@ pipeline {
             }
         }
 
-        stage('Debug Target') {
-            steps {
-                sh 'ls -l target'
-            }
-        }
-
         stage('Find JAR') {
             steps {
                 script {
                     def jarFile = sh(
-                        script: "find target -maxdepth 1 -name '*.jar' | grep -v sources | grep -v original | head -n 1",
+                        script: "find target -maxdepth 1 -name '*.jar' | grep MyMavenGuavaApp | head -n 1",
                         returnStdout: true
                     ).trim()
 
-                    if (!jarFile) {
-                        error "No runnable JAR found in target/"
+                    if (jarFile == "") {
+                        error "JAR not found!"
                     }
 
                     env.JAR_PATH = jarFile
-                    echo "Using JAR: ${env.JAR_PATH}"
+                    echo "Found JAR: ${env.JAR_PATH}"
                 }
             }
         }
