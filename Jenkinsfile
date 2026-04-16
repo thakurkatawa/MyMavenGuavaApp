@@ -21,27 +21,15 @@ pipeline {
             }
         }
 
-        stage('Find JAR') {
+        stage('Verify JAR') {
             steps {
-                script {
-                    def jarFile = sh(
-                        script: "find target -maxdepth 1 -name '*.jar' | grep MyMavenGuavaApp | head -n 1",
-                        returnStdout: true
-                    ).trim()
-
-                    if (jarFile == "") {
-                        error "JAR not found!"
-                    }
-
-                    env.JAR_PATH = jarFile
-                    echo "Found JAR: ${env.JAR_PATH}"
-                }
+                sh 'ls -l target'
             }
         }
 
         stage('Run Application') {
             steps {
-                sh "java -jar ${env.JAR_PATH}"
+                sh 'java -jar target/MyMavenGuavaApp-1.0-SNAPSHOT.jar'
             }
         }
     }
