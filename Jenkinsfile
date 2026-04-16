@@ -21,7 +21,7 @@ pipeline {
             }
         }
 
-        stage('Verify JAR') {
+        stage('Verify') {
             steps {
                 sh 'ls -l target'
             }
@@ -29,7 +29,7 @@ pipeline {
 
         stage('Run Application') {
             steps {
-                sh 'java -jar target/MyMavenGuavaApp-1.0-SNAPSHOT.jar'
+                sh 'java -jar target/*shaded.jar'
             }
         }
     }
